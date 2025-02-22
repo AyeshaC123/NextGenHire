@@ -3,368 +3,456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Builder</title>
+    <title>AI Cover Letter Generator</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
-            background-color: #f0f2f5;
-            padding: 20px;
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
         }
 
         .container {
-            display: flex;
-            gap: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem;
         }
 
-        .input-section {
-            flex: 1;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .preview-section {
-            flex: 1;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        h1 {
+        .header {
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #1a365d;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            color: #4a5568;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .input-section, .output-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 1.5rem;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #34495e;
-            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
         }
 
-        input, textarea {
+        textarea, input[type="file"] {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 10px;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f8fafc;
+            margin-bottom: 1rem;
         }
 
-        button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
+        textarea {
+            min-height: 200px;
+            resize: vertical;
         }
 
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        .section-title {
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
-            margin: 15px 0;
-        }
-
-        .dynamic-list {
-            margin-bottom: 15px;
-        }
-
-        .list-item {
-            background: #f8f9fa;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 4px;
+        .file-input-wrapper {
             position: relative;
+            margin-bottom: 1rem;
         }
 
-        .remove-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 2px 8px;
-            border-radius: 3px;
-            cursor: pointer;
+        .file-input-wrapper input[type="file"] {
+            opacity: 0;
             position: absolute;
-            right: 5px;
-            top: 5px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
 
-        @media print {
-            .input-section {
-                display: none;
-            }
-            .preview-section {
-                box-shadow: none;
-                width: 100%;
-            }
-            .container {
-                display: block;
-            }
+        .file-input-button {
+            display: block;
+            padding: 0.75rem;
+            background: #edf2f7;
+            border: 2px dashed #cbd5e0;
+            border-radius: 6px;
+            text-align: center;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        .file-input-button:hover {
+            background: #e2e8f0;
+        }
+
+        .button {
+            background: #4299e1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: #3182ce;
+        }
+
+        .button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .generated-content {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            min-height: 400px;
+        }
+
+        .editing-tools {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .suggestion-chip {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #ebf8ff;
+            color: #2b6cb0;
+            border-radius: 9999px;
+            margin: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .suggestion-chip:hover {
+            background: #bee3f8;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3182ce;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #e53e3e;
+            background: #fff5f5;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #2f855a;
+            background: #f0fff4;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <h1>Resume Builder</h1>
     <div class="container">
-        <div class="input-section">
-            <h2 class="section-title">Personal Information</h2>
-            <div class="form-group">
-                <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" placeholder="John Doe">
-                
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="john@example.com">
-                
-                <label for="phone">Phone</label>
-                <input type="tel" id="phone" placeholder="(123) 456-7890">
-                
-                <label for="location">Location</label>
-                <input type="text" id="location" placeholder="City, State">
-            </div>
+        <header class="header">
+            <h1>AI Cover Letter Generator</h1>
+            <p>Create personalized, ATS-optimized cover letters using AI</p>
+        </header>
 
-            <h2 class="section-title">Professional Summary</h2>
-            <div class="form-group">
-                <label for="summary">Summary</label>
-                <textarea id="summary" rows="4" placeholder="Brief professional summary"></textarea>
-            </div>
+        <main class="main-content">
+            <section class="input-section">
+                <h2 class="section-title">Upload Documents</h2>
+                
+                <div class="form-group">
+                    <label>Upload Resume (PDF, DOC, DOCX)</label>
+                    <div class="file-input-wrapper">
+                        <div class="file-input-button" id="resumeUploadButton">
+                            <span>Click to upload or drag and drop your resume</span>
+                        </div>
+                        <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx">
+                    </div>
+                </div>
 
-            <h2 class="section-title">Work Experience</h2>
-            <div class="form-group" id="experienceForm">
-                <label for="jobTitle">Job Title</label>
-                <input type="text" id="jobTitle" placeholder="Software Engineer">
-                
-                <label for="company">Company</label>
-                <input type="text" id="company" placeholder="Tech Company Inc.">
-                
-                <label for="workDates">Dates</label>
-                <input type="text" id="workDates" placeholder="Jan 2020 - Present">
-                
-                <label for="responsibilities">Responsibilities</label>
-                <textarea id="responsibilities" rows="3" placeholder="Key responsibilities and achievements"></textarea>
-                
-                <button onclick="addExperience()">Add Experience</button>
-            </div>
-            <div id="experienceList" class="dynamic-list"></div>
+                <div class="form-group">
+                    <label>Job Description</label>
+                    <textarea id="jobDescription" placeholder="Paste the job description here..."></textarea>
+                </div>
 
-            <h2 class="section-title">Education</h2>
-            <div class="form-group" id="educationForm">
-                <label for="degree">Degree</label>
-                <input type="text" id="degree" placeholder="Bachelor of Science">
-                
-                <label for="school">School</label>
-                <input type="text" id="school" placeholder="University Name">
-                
-                <label for="eduDates">Dates</label>
-                <input type="text" id="eduDates" placeholder="2016 - 2020">
-                
-                <button onclick="addEducation()">Add Education</button>
-            </div>
-            <div id="educationList" class="dynamic-list"></div>
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
 
-            <h2 class="section-title">Skills</h2>
-            <div class="form-group" id="skillsForm">
-                <label for="skill">Skill</label>
-                <input type="text" id="skill" placeholder="JavaScript">
+                <button id="generateButton" class="button">Generate Cover Letter</button>
+            </section>
+
+            <section class="output-section">
+                <h2 class="section-title">Generated Cover Letter</h2>
                 
-                <button onclick="addSkill()">Add Skill</button>
-            </div>
-            <div id="skillsList" class="dynamic-list"></div>
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>Generating your cover letter...</p>
+                </div>
 
-            <button onclick="window.print()">Print Resume</button>
-        </div>
+                <div class="generated-content" id="generatedContent" contenteditable="true">
+                    Your generated cover letter will appear here...
+                </div>
 
-        <div class="preview-section" id="resumePreview">
-            <div id="previewContent">
-                <!-- Preview content will be populated by JavaScript -->
-            </div>
-        </div>
+                <div class="editing-tools">
+                    <button class="button" id="regenerateButton" disabled>Regenerate</button>
+                    <button class="button" id="copyButton">Copy to Clipboard</button>
+                </div>
+
+                <div id="suggestions">
+                    <h3 class="section-title">AI Suggestions</h3>
+                    <div id="suggestionChips"></div>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script>
-        // Initialize arrays to store resume data
-        let experiences = [];
-        let education = [];
-        let skills = [];
-
-        // Function to update the preview section
-        function updatePreview() {
-            const previewContent = document.getElementById('previewContent');
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const location = document.getElementById('location').value;
-            const summary = document.getElementById('summary').value;
-
-            let previewHTML = `
-                <h2 style="color: #2c3e50; margin-bottom: 10px;">${fullName || 'Your Name'}</h2>
-                <p style="color: #7f8c8d; margin-bottom: 20px;">
-                    ${email ? email + ' | ' : ''}
-                    ${phone ? phone + ' | ' : ''}
-                    ${location || ''}
-                </p>
-                ${summary ? `
-                    <h3 class="section-title">Professional Summary</h3>
-                    <p style="margin-bottom: 20px;">${summary}</p>
-                ` : ''}
-            `;
-
-            if (experiences.length > 0) {
-                previewHTML += `
-                    <h3 class="section-title">Work Experience</h3>
-                    ${experiences.map(exp => `
-                        <div style="margin-bottom: 15px;">
-                            <h4 style="color: #2c3e50;">${exp.title} at ${exp.company}</h4>
-                            <p style="color: #7f8c8d;">${exp.dates}</p>
-                            <p>${exp.responsibilities}</p>
-                        </div>
-                    `).join('')}
-                `;
-            }
-
-            if (education.length > 0) {
-                previewHTML += `
-                    <h3 class="section-title">Education</h3>
-                    ${education.map(edu => `
-                        <div style="margin-bottom: 15px;">
-                            <h4 style="color: #2c3e50;">${edu.degree}</h4>
-                            <p style="color: #7f8c8d;">${edu.school} | ${edu.dates}</p>
-                        </div>
-                    `).join('')}
-                `;
-            }
-
-            if (skills.length > 0) {
-                previewHTML += `
-                    <h3 class="section-title">Skills</h3>
-                    <p>${skills.join(', ')}</p>
-                `;
-            }
-
-            previewContent.innerHTML = previewHTML;
+        // Mock AI analysis and generation functions
+        function analyzeResume(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Mock resume analysis
+                    resolve({
+                        skills: ['JavaScript', 'Python', 'Project Management'],
+                        experience: ['Software Developer', 'Team Lead'],
+                        achievements: ['Increased efficiency by 40%', 'Led team of 5 developers']
+                    });
+                };
+                reader.readAsText(file);
+            });
         }
 
-        // Add event listeners to all input fields
-        document.querySelectorAll('input, textarea').forEach(input => {
-            input.addEventListener('input', updatePreview);
+        function analyzeJobDescription(text) {
+            // Mock job description analysis
+            return {
+                requirements: ['JavaScript', 'Team leadership', 'Problem-solving'],
+                responsibilities: ['Develop web applications', 'Lead team meetings'],
+                company_values: ['Innovation', 'Collaboration']
+            };
+        }
+
+        function generateCoverLetter(resumeData, jobData) {
+            // Mock cover letter generation
+            const commonSkills = resumeData.skills.filter(skill => 
+                jobData.requirements.includes(skill));
+            
+            return `Dear Hiring Manager,
+
+I am writing to express my strong interest in the [Position] role at [Company Name]. With my background in ${resumeData.experience.join(' and ')}, I am confident in my ability to contribute effectively to your team.
+
+Throughout my career, I have developed expertise in ${commonSkills.join(', ')}, which align perfectly with your requirements. ${resumeData.achievements[0]}, demonstrating my commitment to excellence and results-driven approach.
+
+I am particularly drawn to [Company Name]'s focus on ${jobData.company_values.join(' and ')}, as these values mirror my own professional principles. My experience in ${jobData.responsibilities[0]} positions me well to take on the responsibilities of this role.
+
+Thank you for considering my application. I look forward to discussing how I can contribute to your team's success.
+
+Best regards,
+[Your Name]`;
+        }
+
+        // UI Interaction
+        const resumeUpload = document.getElementById('resumeUpload');
+        const jobDescription = document.getElementById('jobDescription');
+        const generateButton = document.getElementById('generateButton');
+        const regenerateButton = document.getElementById('regenerateButton');
+        const copyButton = document.getElementById('copyButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const generatedContent = document.getElementById('generatedContent');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const suggestionChips = document.getElementById('suggestionChips');
+
+        let resumeData = null;
+        let jobData = null;
+
+        resumeUpload.addEventListener('change', async (e) => {
+            if (e.target.files.length > 0) {
+                try {
+                    resumeData = await analyzeResume(e.target.files[0]);
+                    successMessage.textContent = 'Resume uploaded and analyzed successfully!';
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                } catch (error) {
+                    errorMessage.textContent = 'Error analyzing resume. Please try again.';
+                    errorMessage.style.display = 'block';
+                    successMessage.style.display = 'none';
+                }
+            }
         });
 
-        function addExperience() {
-            const title = document.getElementById('jobTitle').value;
-            const company = document.getElementById('company').value;
-            const dates = document.getElementById('workDates').value;
-            const responsibilities = document.getElementById('responsibilities').value;
-
-            if (title && company && dates && responsibilities) {
-                experiences.push({ title, company, dates, responsibilities });
-                updateExperienceList();
-                updatePreview();
-
-                // Clear form
-                document.getElementById('jobTitle').value = '';
-                document.getElementById('company').value = '';
-                document.getElementById('workDates').value = '';
-                document.getElementById('responsibilities').value = '';
+        generateButton.addEventListener('click', async () => {
+            if (!resumeData || !jobDescription.value.trim()) {
+                errorMessage.textContent = 'Please upload a resume and provide a job description.';
+                errorMessage.style.display = 'block';
+                return;
             }
-        }
 
-        function addEducation() {
-            const degree = document.getElementById('degree').value;
-            const school = document.getElementById('school').value;
-            const dates = document.getElementById('eduDates').value;
+            loadingIndicator.classList.add('active');
+            generatedContent.style.display = 'none';
 
-            if (degree && school && dates) {
-                education.push({ degree, school, dates });
-                updateEducationList();
-                updatePreview();
+            try {
+                jobData = analyzeJobDescription(jobDescription.value);
+                const coverLetter = generateCoverLetter(resumeData, jobData);
 
-                // Clear form
-                document.getElementById('degree').value = '';
-                document.getElementById('school').value = '';
-                document.getElementById('eduDates').value = '';
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                generatedContent.textContent = coverLetter;
+                regenerateButton.disabled = false;
+
+                // Generate AI suggestions
+                const suggestions = [
+                    'Add more specific achievements',
+                    'Mention company culture fit',
+                    'Highlight leadership experience',
+                    'Include relevant certifications'
+                ];
+
+                suggestionChips.innerHTML = suggestions.map(suggestion => 
+                    `<span class="suggestion-chip">${suggestion}</span>`
+                ).join('');
+
+                successMessage.textContent = 'Cover letter generated successfully!';
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            } catch (error) {
+                errorMessage.textContent = 'Error generating cover letter. Please try again.';
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            } finally {
+                loadingIndicator.classList.remove('active');
+                generatedContent.style.display = 'block';
             }
-        }
+        });
 
-        function addSkill() {
-            const skill = document.getElementById('skill').value;
-            if (skill) {
-                skills.push(skill);
-                updateSkillsList();
-                updatePreview();
-                document.getElementById('skill').value = '';
+        regenerateButton.addEventListener('click', () => {
+            generateButton.click();
+        });
+
+        copyButton.addEventListener('click', () => {
+            const content = generatedContent.textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                successMessage.textContent = 'Cover letter copied to clipboard!';
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            });
+        });
+
+        // Make the file input button work with the hidden file input
+        document.getElementById('resumeUploadButton').addEventListener('click', () => {
+            resumeUpload.click();
+        });
+
+        // Update file input button text when file is selected
+        resumeUpload.addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name;
+            if (fileName) {
+                document.querySelector('#resumeUploadButton span').textContent = `Selected: ${fileName}`;
             }
+        });
+
+        // Handle drag and drop
+        const dropZone = document.getElementById('resumeUploadButton');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
-        function updateExperienceList() {
-            const list = document.getElementById('experienceList');
-            list.innerHTML = experiences.map((exp, index) => `
-                <div class="list-item">
-                    ${exp.title} at ${exp.company}
-                    <button class="remove-btn" onclick="removeExperience(${index})">×</button>
-                </div>
-            `).join('');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.style.background = '#e2e8f0';
+            dropZone.style.borderColor = '#4299e1';
         }
 
-        function updateEducationList() {
-            const list = document.getElementById('educationList');
-            list.innerHTML = education.map((edu, index) => `
-                <div class="list-item">
-                    ${edu.degree} - ${edu.school}
-                    <button class="remove-btn" onclick="removeEducation(${index})">×</button>
-                </div>
-            `).join('');
+        function unhighlight(e) {
+            dropZone.style.background = '#edf2f7';
+            dropZone.style.borderColor = '#cbd5e0';
         }
 
-        function updateSkillsList() {
-            const list = document.getElementById('skillsList');
-            list.innerHTML = skills.map((skill, index) => `
-                <div class="list-item">
-                    ${skill}
-                    <button class="remove-btn" onclick="removeSkill(${index})">×</button>
-                </div>
-            `).join('');
-        }
+        dropZone.addEventListener('drop', handleDrop, false);
 
-        function removeExperience(index) {
-            experiences.splice(index, 1);
-            updateExperienceList();
-            updatePreview();
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            resumeUpload.files = files;
+            const event = new Event('change');
+            resumeUpload.dispatchEvent(event);
         }
-
-        function removeEducation(index) {
-            education.splice(index, 1);
-            updateEducationList();
-            updatePreview();
-        }
-
-        function removeSkill(index) {
-            skills.splice(index, 1);
-            updateSkillsList();
-            updatePreview();
-        }
-
-        // Initial preview update
-        updatePreview();
     </script>
 </body>
 </html>
