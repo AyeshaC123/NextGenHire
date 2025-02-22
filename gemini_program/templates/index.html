@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gemini API Test inside template</title>
+</head>
+<body>
+    <h1>Gemini API Test</h1>
+    <form method="post">
+        <label for="prompt">Enter your prompt:</label><br>
+        <input type="text" id="prompt" name="prompt"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    {% if generated_text %}
+        <h2>Generated Text:</h2>
+        <p>{{ generated_text }}</p>
+    {% endif %}
+</body>
+</html>
