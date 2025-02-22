@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .input-section {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .preview-section {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin: 15px 0;
+        }
+
+        .dynamic-list {
+            margin-bottom: 15px;
+        }
+
+        .list-item {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            position: absolute;
+            right: 5px;
+            top: 5px;
+        }
+
+        @media print {
+            .input-section {
+                display: none;
+            }
+            .preview-section {
+                box-shadow: none;
+                width: 100%;
+            }
+            .container {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Resume Builder</h1>
+    <div class="container">
+        <div class="input-section">
+            <h2 class="section-title">Personal Information</h2>
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" placeholder="John Doe">
+                
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="john@example.com">
+                
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" placeholder="(123) 456-7890">
+                
+                <label for="location">Location</label>
+                <input type="text" id="location" placeholder="City, State">
+            </div>
+
+            <h2 class="section-title">Professional Summary</h2>
+            <div class="form-group">
+                <label for="summary">Summary</label>
+                <textarea id="summary" rows="4" placeholder="Brief professional summary"></textarea>
+            </div>
+
+            <h2 class="section-title">Work Experience</h2>
+            <div class="form-group" id="experienceForm">
+                <label for="jobTitle">Job Title</label>
+                <input type="text" id="jobTitle" placeholder="Software Engineer">
+                
+                <label for="company">Company</label>
+                <input type="text" id="company" placeholder="Tech Company Inc.">
+                
+                <label for="workDates">Dates</label>
+                <input type="text" id="workDates" placeholder="Jan 2020 - Present">
+                
+                <label for="responsibilities">Responsibilities</label>
+                <textarea id="responsibilities" rows="3" placeholder="Key responsibilities and achievements"></textarea>
+                
+                <button onclick="addExperience()">Add Experience</button>
+            </div>
+            <div id="experienceList" class="dynamic-list"></div>
+
+            <h2 class="section-title">Education</h2>
+            <div class="form-group" id="educationForm">
+                <label for="degree">Degree</label>
+                <input type="text" id="degree" placeholder="Bachelor of Science">
+                
+                <label for="school">School</label>
+                <input type="text" id="school" placeholder="University Name">
+                
+                <label for="eduDates">Dates</label>
+                <input type="text" id="eduDates" placeholder="2016 - 2020">
+                
+                <button onclick="addEducation()">Add Education</button>
+            </div>
+            <div id="educationList" class="dynamic-list"></div>
+
+            <h2 class="section-title">Skills</h2>
+            <div class="form-group" id="skillsForm">
+                <label for="skill">Skill</label>
+                <input type="text" id="skill" placeholder="JavaScript">
+                
+                <button onclick="addSkill()">Add Skill</button>
+            </div>
+            <div id="skillsList" class="dynamic-list"></div>
+
+            <button onclick="window.print()">Print Resume</button>
+        </div>
+
+        <div class="preview-section" id="resumePreview">
+            <div id="previewContent">
+                <!-- Preview content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize arrays to store resume data
+        let experiences = [];
+        let education = [];
+        let skills = [];
+
+        // Function to update the preview section
+        function updatePreview() {
+            const previewContent = document.getElementById('previewContent');
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+            const summary = document.getElementById('summary').value;
+
+            let previewHTML = `
+                <h2 style="color: #2c3e50; margin-bottom: 10px;">${fullName || 'Your Name'}</h2>
+                <p style="color: #7f8c8d; margin-bottom: 20px;">
+                    ${email ? email + ' | ' : ''}
+                    ${phone ? phone + ' | ' : ''}
+                    ${location || ''}
+                </p>
+                ${summary ? `
+                    <h3 class="section-title">Professional Summary</h3>
+                    <p style="margin-bottom: 20px;">${summary}</p>
+                ` : ''}
+            `;
+
+            if (experiences.length > 0) {
+                previewHTML += `
+                    <h3 class="section-title">Work Experience</h3>
+                    ${experiences.map(exp => `
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: #2c3e50;">${exp.title} at ${exp.company}</h4>
+                            <p style="color: #7f8c8d;">${exp.dates}</p>
+                            <p>${exp.responsibilities}</p>
+                        </div>
+                    `).join('')}
+                `;
+            }
+
+            if (education.length > 0) {
+                previewHTML += `
+                    <h3 class="section-title">Education</h3>
+                    ${education.map(edu => `
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: #2c3e50;">${edu.degree}</h4>
+                            <p style="color: #7f8c8d;">${edu.school} | ${edu.dates}</p>
+                        </div>
+                    `).join('')}
+                `;
+            }
+
+            if (skills.length > 0) {
+                previewHTML += `
+                    <h3 class="section-title">Skills</h3>
+                    <p>${skills.join(', ')}</p>
+                `;
+            }
+
+            previewContent.innerHTML = previewHTML;
+        }
+
+        // Add event listeners to all input fields
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', updatePreview);
+        });
+
+        function addExperience() {
+            const title = document.getElementById('jobTitle').value;
+            const company = document.getElementById('company').value;
+            const dates = document.getElementById('workDates').value;
+            const responsibilities = document.getElementById('responsibilities').value;
+
+            if (title && company && dates && responsibilities) {
+                experiences.push({ title, company, dates, responsibilities });
+                updateExperienceList();
+                updatePreview();
+
+                // Clear form
+                document.getElementById('jobTitle').value = '';
+                document.getElementById('company').value = '';
+                document.getElementById('workDates').value = '';
+                document.getElementById('responsibilities').value = '';
+            }
+        }
+
+        function addEducation() {
+            const degree = document.getElementById('degree').value;
+            const school = document.getElementById('school').value;
+            const dates = document.getElementById('eduDates').value;
+
+            if (degree && school && dates) {
+                education.push({ degree, school, dates });
+                updateEducationList();
+                updatePreview();
+
+                // Clear form
+                document.getElementById('degree').value = '';
+                document.getElementById('school').value = '';
+                document.getElementById('eduDates').value = '';
+            }
+        }
+
+        function addSkill() {
+            const skill = document.getElementById('skill').value;
+            if (skill) {
+                skills.push(skill);
+                updateSkillsList();
+                updatePreview();
+                document.getElementById('skill').value = '';
+            }
+        }
+
+        function updateExperienceList() {
+            const list = document.getElementById('experienceList');
+            list.innerHTML = experiences.map((exp, index) => `
+                <div class="list-item">
+                    ${exp.title} at ${exp.company}
+                    <button class="remove-btn" onclick="removeExperience(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function updateEducationList() {
+            const list = document.getElementById('educationList');
+            list.innerHTML = education.map((edu, index) => `
+                <div class="list-item">
+                    ${edu.degree} - ${edu.school}
+                    <button class="remove-btn" onclick="removeEducation(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function updateSkillsList() {
+            const list = document.getElementById('skillsList');
+            list.innerHTML = skills.map((skill, index) => `
+                <div class="list-item">
+                    ${skill}
+                    <button class="remove-btn" onclick="removeSkill(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeExperience(index) {
+            experiences.splice(index, 1);
+            updateExperienceList();
+            updatePreview();
+        }
+
+        function removeEducation(index) {
+            education.splice(index, 1);
+            updateEducationList();
+            updatePreview();
+        }
+
+        function removeSkill(index) {
+            skills.splice(index, 1);
+            updateSkillsList();
+            updatePreview();
+        }
+
+        // Initial preview update
+        updatePreview();
+    </script>
+</body>
+</html>
