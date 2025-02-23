@@ -74,7 +74,7 @@ def calculate_overall_impact_score(resume_text, job_description):
         f"Assess the overall impact of the following resume based on the job description provided. "
         f"Provide a score out of 100 and an explanation for the score. "
         f"Consider factors like skills, experience, keywords, and overall presentation. "
-        f"Format your response as a JSON object with 'score' and 'explanation' keys. Only return the JSON object.\n\n"
+        f"Format your response as a JSON object with 'score' and 'explanation' keys. Don't exceed over three sentences.\n\n"
         f"Resume:\n{resume_text}\n\n"
         f"Job Description:\n{job_description}"
     )
