@@ -115,14 +115,17 @@ def calculate_overall_impact_score(resume_text, job_description):
 # ========================
 #  Resume Improvement Suggestions
 # ========================
-def suggest_stronger_verbs(resume_text):
+def resume_suggestions(resume_text):
     """
     Sends a prompt to Gemini with the resume and returns places in the resume that can be improved.
     """
     prompt = (
         f"Please review the following resume and provide specific suggestions for improvement. "
-        f"Try to give up to 5 most relevant/needed suggestions for my resume regarding the descriptions, not trivial things like name, email, gpa, etc. "
-        f"only give suggestions for things I do not have in my resume. "
+        f"Try to give up to 5 most relevant/needed suggestions for the resume regarding the descriptions, not trivial things like name, email, gpa, etc. "
+        f"Only give suggestions for things that are not already in the following resume. Do not suggest things that are present already. Also do not give suggestions regarding Tailoring resume to specific roles or proofreading. Also provide brief examples when possible.  "
+        # f"Identify areas where the language is weak, vague, or could be more impactful. "
+        # f"Suggest specific rewrites or alternative phrasing to strengthen the resume only for the descriptions, not trivial things like name, email, gpa, etc. "
+        # f"Focus on improving the clarity, conciseness, and impact of the language. only give suggestions for up to 5 of the most needed things a time not more "
         f"Resume:\n{resume_text}"
     )
 
@@ -291,11 +294,7 @@ def resume_enhancer():
 
         try:
             resume_text = extract_text_from_pdf(resume_file)
-
-            if not resume_text:
-                return render_template('resume_enhancer.html', error='Could not extract text from resume. Please ensure it is a valid PDF.')
-
-            suggested_verbs = suggest_stronger_verbs(resume_text)
+            suggested_verbs = resume_suggestions(resume_text)
 
             job_description_skills = extract_technical_skills(job_description)
             resume_skills = extract_technical_skills(resume_text)
