@@ -23,7 +23,7 @@ NextGenHire is a web application that helps users with their job search. It incl
     pip install Flask-PyMongo chardet
     ```
 
-3.  **Set up environment variables:**
+3.  **Set up environment variables: (already done)**
 
     *   Create a `.env` file in the `NextGenHire/` directory.
     *   Add the following environment variables to the `.env` file:
