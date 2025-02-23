@@ -3,10 +3,13 @@ import os
 import time
 import hashlib
 from os import environ as env
-from urllib.parse import quote_plus, urlencode
-from flask import Flask, redirect, render_template, session, url_for, request
+from urllib.parse import quote_plus, urlencode, quote
+from flask import Flask, redirect, render_template, session, url_for, request, send_file
 from authlib.integrations.flask_client import OAuth
 import google.generativeai as genai
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import io
 import PyPDF2
 import chardet
 
@@ -69,19 +72,21 @@ def extract_technical_skills(text):
     Extracts technical skills using Gemini API.
     """
     prompt = f"Extract the technical skills from the following text:\n{text}\n\nList the skills as comma-separated values."
-    
+
     # Cache lookup
     key = hashlib.sha256(text.encode()).hexdigest()
     if key in cache:
         return cache[key]
-    
+
     try:
         response = model.generate_content(prompt)
         skills = {skill.strip() for skill in response.text.split(',')}
         cache[key] = skills  # Store in cache
+        print(f"Cached Skills: {skills}")
         return skills
     except Exception as e:
-        return f"An error occurred: {e}"
+        print(f"An error occurred: {e}")
+        return set()  # Return an empty set in case of an error
 
 # ========================
 #  Generate Text (AI Cover Letter)
@@ -94,7 +99,7 @@ def generate_text(prompt):
     key = hashlib.sha256(prompt.encode()).hexdigest()
     if key in cache:
         return cache[key]  # Return cached result
-    
+
     retries = 3
     for attempt in range(retries):
         try:
@@ -108,8 +113,9 @@ def generate_text(prompt):
                 time.sleep(wait_time)
             else:
                 return f"An error occurred: {e}"
-    
+
     return "Failed after multiple attempts due to API rate limits."
+
 
 # ========================
 #  Auth Routes
@@ -166,15 +172,30 @@ def cover_letter_generator():
             # Extract text from resume
             resume_text = extract_text_from_pdf(resume_file)
 
-            # Extract technical skills from both resume & job description
-            technical_skills = extract_technical_skills(resume_text + job_description)
+            # Extract technical skills from resume
+            resume_skills = extract_technical_skills(resume_text)
+            print(f"Resume Skills: {resume_skills}")
+
+            # Extract technical skills from job description
+            job_description_skills = extract_technical_skills(job_description)
+            print(f"Job Description Skills: {job_description_skills}")
+
+            # Find missing skills (skills in job description but not in resume)
+            missing_skills = job_description_skills.difference(resume_skills)
 
             # Create AI prompt
             prompt = (
                 f"Write a professional cover letter using the following resume:\n{resume_text}\n\n"
                 f"For this job description:\n{job_description}\n\n"
-                f"Only include these key skills: {', '.join(technical_skills)}."
+                f"Highlight my existing skills and experience. "
+                f"Do not include any contact information, addresses, or dates in the cover letter."
             )
+
+            if missing_skills:
+                prompt += (
+                    f"Also, address the fact that I may not have experience with the following skills: {', '.join(missing_skills)}. "
+                    f"Express my strong interest and eagerness to learn these skills quickly and contribute to the company's success."
+                )
 
             # Generate cover letter
             generated_text = generate_text(prompt)
