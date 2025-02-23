@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextGenHire</title>
+    <title>Resume Enhancer</title>
     <style>
         * {
             margin: 0;
@@ -67,10 +67,6 @@
             background-color: #ddd;
             color: black;
         }
-        .highlighted-skill {
-            background-color: yellow;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -81,43 +77,11 @@
     </nav>
     <div class="container">
         <header class="header">
-            <h1>NextGenHire</h1>
-            <p>Your one-stop shop for career advancement.</p>
+            <h1>Resume Enhancer</h1>
+            <p>Enhance your resume with our AI-powered tool.</p>
         </header>
         <main class="main-content">
-
-            <section class="input-section">
-                <h2 class="section-title">Upload Resume & Job Description</h2>
-                <form method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label>Upload Resume</label>
-                        <input type="file" id="resume" name="resume">
-                    </div>
-                    <div class="form-group">
-                        <label>Job Description</label>
-                        <textarea id="prompt" name="prompt" placeholder="Paste the job description here..."></textarea>
-                    </div>
-                    <button type="submit" class="button">Generate Cover Letter</button>
-                </form>
-                {% if error %}
-                    <p style="color: red;">{{ error }}</p>
-                {% endif %}
-            </section>
-            <section class="output-section">
-                <h2 class="section-title">Generated Cover Letter</h2>
-                <div class="loading" id="loadingIndicator">
-                    <p>Generating your cover letter...</p>
-                </div>
-                {% if generated_text %}
-                    <div class="generated-content">{{ generated_text }}</div>
-                {% else %}
-                    <div class="generated-content">Your generated cover letter will appear here...</div>
-                {% endif %}
-            </section>
-
-            <a href="/cover_letter_generator" class="link-button">AI Cover Letter Generator</a>
-            <a href="/resume_enhancer" class="link-button">Resume Enhancer</a>
-
+            <a href="/" class="link-button">Home</a>
         </main>
     </div>
 </body>
