@@ -150,11 +150,25 @@
                 </div>
                 {% if generated_text %}
                     <div class="generated-content">{{ generated_text }}</div>
+                    <button class="button" onclick="copyToClipboard()">Copy to Clipboard</button>
                 {% else %}
                     <div class="generated-content">Your generated cover letter will appear here...</div>
                 {% endif %}
             </section>
         </main>
     </div>
+    <script>
+        function copyToClipboard() {
+            const text = document.querySelector('.generated-content').innerText;
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert('Cover letter copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy cover letter to clipboard.');
+                });
+        }
+    </script>
 </body>
 </html>
