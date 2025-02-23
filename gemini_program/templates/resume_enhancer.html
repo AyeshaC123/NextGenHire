@@ -99,14 +99,10 @@
                 <button type="submit" class="button">Analyze</button>
             </form>
 
-            <h2>Suggested Action Verbs:</h2>
+            <h2>Suggested Improvements:</h2>
             <div class="generated-content" id="action_verbs">
                 {% if suggested_verbs %}
-                    <ul>
-                        {% for verb in suggested_verbs %}
-                            <li>{{ verb.weak_verb }}: {{ verb.alternatives|join(', ') }}</li>
-                        {% endfor %}
-                    </ul>
+                    <p>{{ suggested_verbs }}</p>
                 {% endif %}
             </div>
 
