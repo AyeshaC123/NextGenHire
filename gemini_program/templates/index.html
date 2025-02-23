@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Cover Letter Generator</title>
+    <title>Gemini API Test</title>
     <style>
         * {
             margin: 0;
@@ -97,27 +97,32 @@
         <header class="header">
             <h1>AI Cover Letter Generator</h1>
             <p>Create personalized, ATS-optimized cover letters using AI</p>
+            
+            <p>Welcome, {{ session.userinfo.name }}!</p>
+            <a href="/logout" class="button">Logout</a>
         </header>
+        
+
         <main class="main-content">
             <section class="input-section">
-                <h2 class="section-title">Upload Resume & Job Description</h2>
+                <h2 class="section-title">Enter Prompt</h2>
                 <form method="post">
                     <div class="form-group">
-                        <label>Job Description</label>
-                        <textarea id="prompt" name="prompt" placeholder="Paste the job description here..."></textarea>
+                        <label>Prompt</label>
+                        <textarea id="prompt" name="prompt" placeholder="Enter your prompt here..."></textarea>
                     </div>
-                    <button type="submit" class="button">Generate Cover Letter</button>
+                    <button type="submit" class="button">Generate Text</button>
                 </form>
             </section>
             <section class="output-section">
-                <h2 class="section-title">Generated Cover Letter</h2>
+                <h2 class="section-title">Generated Text</h2>
                 <div class="loading" id="loadingIndicator">
-                    <p>Generating your cover letter...</p>
+                    <p>Generating text...</p>
                 </div>
                 {% if generated_text %}
                     <div class="generated-content">{{ generated_text }}</div>
                 {% else %}
-                    <div class="generated-content">Your generated cover letter will appear here...</div>
+                    <div class="generated-content">Your generated text will appear here...</div>
                 {% endif %}
             </section>
         </main>
