@@ -10,6 +10,7 @@ import google.generativeai as genai
 import io
 import PyPDF2
 import chardet
+import re
 
 # Load environment variables
 from dotenv import find_dotenv, load_dotenv
@@ -63,6 +64,55 @@ def extract_text_from_pdf(file):
         return f"An error occurred while reading the PDF: {e}"
 
 # ========================
+#  Resume Impact Score
+# ========================
+def calculate_overall_impact_score(resume_text, job_description):
+    """
+    Calculates the overall impact score of the resume using Gemini API.
+    """
+    prompt = (
+        f"Assess the overall impact of the following resume based on the job description provided. "
+        f"Provide a score out of 100 and an explanation for the score. "
+        f"Consider factors like skills, experience, keywords, and overall presentation. "
+        f"Format your response as a JSON object with 'score' and 'explanation' keys. Only return the JSON object.\n\n"
+        f"Resume:\n{resume_text}\n\n"
+        f"Job Description:\n{job_description}"
+    )
+
+    try:
+        # Generate AI response
+        response_text = model.generate_content(prompt).text.strip()
+
+        # Remove markdown-style JSON formatting (```json ... ```)
+        response_text = re.sub(r"```json\s*|\s*```", "", response_text).strip()
+
+        # Attempt to parse cleaned response as JSON
+        result = json.loads(response_text)
+
+        # Ensure score is a string for consistency
+        if 'score' in result and 'explanation' in result:
+            result['score'] = str(result['score'])
+            return result
+        else:
+            return {
+                "score": "N/A",
+                "explanation": f"Could not find 'score' or 'explanation' keys in AI response: {response_text}"
+            }
+
+    except json.JSONDecodeError as e:
+        return {
+            "score": "N/A",
+            "explanation": f"Could not parse AI response as JSON: {response_text}. Error: {str(e)}"
+        }
+
+    except Exception as e:
+        return {
+            "score": "N/A",
+            "explanation": f"An error occurred: {e}"
+        }
+    
+
+# ========================
 #  Resume Improvement Suggestions
 # ========================
 def suggest_stronger_verbs(resume_text):
@@ -73,9 +123,6 @@ def suggest_stronger_verbs(resume_text):
         f"Please review the following resume and provide specific suggestions for improvement. "
         f"Try to give up to 5 most relevant/needed suggestions for my resume regarding the descriptions, not trivial things like name, email, gpa, etc. "
         f"only give suggestions for things I do not have in my resume. "
-        # f"Identify areas where the language is weak, vague, or could be more impactful. "
-        # f"Suggest specific rewrites or alternative phrasing to strengthen the resume only for the descriptions, not trivial things like name, email, gpa, etc. "
-        # f"Focus on improving the clarity, conciseness, and impact of the language. only give suggestions for up to 5 of the most needed things a time not more "
         f"Resume:\n{resume_text}"
     )
 
@@ -255,10 +302,15 @@ def resume_enhancer():
             missing_skills = job_description_skills.difference(resume_skills)
             suggested_keywords = list(missing_skills)
 
+            # Calculate overall impact score
+            impact_analysis = calculate_overall_impact_score(resume_text, job_description)
+
             return render_template(
                 "resume_enhancer.html",
                 suggested_verbs=suggested_verbs,
                 suggested_keywords=suggested_keywords,
+                impact_score=impact_analysis.get('score', 'N/A'),
+                impact_explanation=impact_analysis.get('explanation', 'N/A')
             )
 
         except Exception as e:

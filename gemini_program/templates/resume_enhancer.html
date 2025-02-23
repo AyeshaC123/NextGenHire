@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Enhancer</title>
     <style>
+        .impact-score {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #28a745; /* A shade of green for positive impact */
+        }
         * {
             margin: 0;
             padding: 0;
@@ -128,6 +133,12 @@
                         {% endif %}
                     </div>
                 </div>
+            </div>
+
+            <h2>Overall Impact Score:</h2>
+            <div class="generated-content">
+                <p><span class="impact-score">{{ impact_score }}%</span></p>
+                <p>{{ impact_explanation }}</p>
             </div>
         </main>
     </div>
