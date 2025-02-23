@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Cover Letter Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        body {
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            color: #1a365d;
+            margin-bottom: 1rem;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        .input-section, .output-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f8fafc;
+            margin-bottom: 1rem;
+        }
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .button {
+            background: #4299e1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .button:hover {
+            background: #3182ce;
+        }
+        .generated-content {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            min-height: 400px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        .loading.active {
+            display: block;
+        }
+        nav {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/cover_letter_generator">AI Cover Letter Generator</a>
+        <a href="/resume_enhancer">Resume Enhancer</a>
+    </nav>
+    <div class="container">
+        <header class="header">
+            <h1>AI Cover Letter Generator</h1>
+            <p>Create personalized, ATS-optimized cover letters using AI</p>
+        </header>
+        <main class="main-content">
+            <section class="input-section">
+                <h2 class="section-title">Upload Resume & Job Description</h2>
+                <form method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Upload Resume</label>
+                        <input type="file" id="resume" name="resume">
+                    </div>
+                    <div class="form-group">
+                        <label>Job Description</label>
+                        <textarea id="prompt" name="prompt" placeholder="Paste the job description here..."></textarea>
+                    </div>
+                    <button type="submit" class="button">Generate Cover Letter</button>
+                </form>
+                {% if error %}
+                    <p style="color: red;">{{ error }}</p>
+                {% endif %}
+            </section>
+            <section class="output-section">
+                <h2 class="section-title">Generated Cover Letter</h2>
+                <div class="loading" id="loadingIndicator">
+                    <p>Generating your cover letter...</p>
+                </div>
+                {% if generated_text %}
+                    <div class="generated-content">{{ generated_text }}</div>
+                {% else %}
+                    <div class="generated-content">Your generated cover letter will appear here...</div>
+                {% endif %}
+            </section> 
+            </section>
+        </main>
+    </div>
+</body>
+</html>
