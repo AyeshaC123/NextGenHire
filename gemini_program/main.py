@@ -29,12 +29,24 @@ def extract_text_from_pdf(file):
     except Exception as e:
         return f"An error occurred while reading the PDF: {e}"
 
+def extract_technical_skills(job_description):
+    """
+    Extracts technical skills from the job description using Gemini.
+    """
+    prompt = f"Extract the technical skills from the following job description:\n{job_description}\n\nList the skills as comma separated values. Only extract skills explicitly mentioned in the job description."
+    response = model.generate_content(prompt)
+    # Split the skills by comma and remove leading/trailing whitespace
+    technical_skills = {skill.strip() for skill in response.text.split(',')}
+    return technical_skills
+
 def find_matching_skills(resume_text, job_description):
     """
-    Finds matching skills between the resume and job description.
+    Finds matching technical skills between the resume and job description.
     """
-    resume_skills = set(re.findall(r'\b\w+\b', resume_text.lower()))
-    job_skills = set(re.findall(r'\b\w+\b', job_description.lower()))
+    # Extract technical skills from the resume
+    resume_skills = extract_technical_skills(resume_text)
+    # Extract technical skills from the job description
+    job_skills = extract_technical_skills(job_description)
     matching_skills = resume_skills.intersection(job_skills)
     return matching_skills
 
