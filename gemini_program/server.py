@@ -6,6 +6,7 @@ from os import environ as env
 from urllib.parse import quote_plus, urlencode
 from flask import Flask, redirect, render_template, session, url_for, request
 from authlib.integrations.flask_client import OAuth
+from flask_pymongo import PyMongo
 import google.generativeai as genai
 import PyPDF2
 import chardet
@@ -19,6 +20,21 @@ if ENV_FILE:
 
 app = Flask(__name__)
 app.secret_key = env.get("APP_SECRET_KEY")
+
+# Debugging: Check if MONGO_URI is loaded
+mongo_uri = os.getenv("MONGO_URI")
+if not mongo_uri:
+    print("❌ ERROR: MONGO_URI is not set. Check your .env file.")
+else:
+    print(f"✅ Connecting to MongoDB: {mongo_uri}")
+
+# Configure MongoDB
+app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+mongo = PyMongo(app)
+
+# Debugging: Check if MongoDB is connected
+if mongo.db is None:
+    print("❌ ERROR: MongoDB connection failed. Check MONGO_URI.")
 
 # Auth0 OAuth setup
 oauth = OAuth(app)
@@ -145,6 +161,36 @@ def home():
         return render_template("login.html")
     return render_template("index.html", session=session.get("user"))
 
+def home_page():
+    jobs = mongo.db.applied_jobs.find()
+    return render_template("index.html", jobs=jobs)
+
+def index():
+    return render_template("index.html")  # Ensure index.html exists in templates folder
+
+# Add Job Application Route
+@app.route("/add_job", methods=["POST"])
+def add_job():
+    company = request.form.get("company")
+    position = request.form.get("position")
+    status = request.form.get("status", "Applied")
+
+    if company and position:
+        mongo.db.applied_jobs.insert_one({"company": company, "position": position, "status": status})
+
+    return redirect(url_for("jobs"))  # Redirect to "/jobs" instead of "index"
+
+
+# Delete Job Route
+@app.route("/delete_job/<job_id>", methods=["POST"])
+def delete_job(job_id):
+    from bson.objectid import ObjectId
+    mongo.db.applied_jobs.delete_one({"_id": ObjectId(job_id)})
+    return redirect(url_for("home"))
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
 # ========================
 #  Cover Letter Generator
 # ========================
@@ -194,7 +240,31 @@ def resume_enhancer():
     return render_template("resume_enhancer.html")
 
 # ========================
+#  Jobs Page
+# ========================
+# @app.route("/jobs")
+# def jobs():
+#     mongo_client = PyMongo(app).cx
+#     jobs_list = mongo_client.db.applied_jobs.find()
+#     return render_template("jobs.html", jobs=jobs_list)
+
+@app.route("/jobs")
+def jobs():
+    try:
+        if mongo.db is None:
+            return "❌ ERROR: MongoDB is not connected.", 500
+
+        jobs_list = list(mongo.db.applied_jobs.find())  # Ensure it's a list
+        print(f"✅ Jobs retrieved: {jobs_list}")  # Debugging output
+        return render_template("jobs.html", jobs=jobs_list)
+    except Exception as e:
+        print(f"❌ Error in /jobs route: {str(e)}")  # Print the actual error
+        return "Internal Server Error", 500
+
+# ========================
 #  Run Flask App
 # ========================
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=env.get("PORT", 5001), debug=True)
+    port = int(os.environ.get("PORT", 5001))  # Get port from environment variable, default to 5001
+    print(f"Starting Flask on port {port}")  # Debugging print statement
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)
