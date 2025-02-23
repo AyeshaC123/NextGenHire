@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,6 +84,7 @@
             border-radius: 6px;
             border: 1px solid #e2e8f0;
             min-height: 400px;
+            white-space: pre-line;
         }
         .loading {
             display: none;
@@ -111,11 +115,12 @@
     </style>
 </head>
 <body>
-    <nav>
+    {% include 'navbar.html' %}
+    <!-- <nav>
         <a href="/">Home</a>
         <a href="/cover_letter_generator">AI Cover Letter Generator</a>
         <a href="/resume_enhancer">Resume Enhancer</a>
-    </nav>
+    </nav> -->
     <div class="container">
         <header class="header">
             <h1>AI Cover Letter Generator</h1>
@@ -146,12 +151,25 @@
                 </div>
                 {% if generated_text %}
                     <div class="generated-content">{{ generated_text }}</div>
+                    <button class="button" onclick="copyToClipboard()">Copy to Clipboard</button>
                 {% else %}
                     <div class="generated-content">Your generated cover letter will appear here...</div>
                 {% endif %}
-            </section> 
             </section>
         </main>
     </div>
+    <script>
+        function copyToClipboard() {
+            const text = document.querySelector('.generated-content').innerText;
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert('Cover letter copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy cover letter to clipboard.');
+                });
+        }
+    </script>
 </body>
 </html>

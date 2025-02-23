@@ -19,7 +19,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        h1 {
+        h1,h3 {
             color: #1a365d;
             margin-bottom: 20px;
         }
@@ -41,9 +41,13 @@
     </style>
 </head>
 <body>
+    
     <div class="container">
-        <h1>Welcome to AI Cover Letter Generator</h1>
-        <p>You need to log in to access the generator.</p>
+        <img src="{{ url_for('static', filename='hacklogo.png') }}" alt="Logo" width="100">
+        <h1>NextGenHire</h1>
+        <h3>Your one-stop shop for career advancement.</h3>
+        <p>Please sign in to get started!</p>
+
         <a href="/login" class="button">Login with Auth0</a>
     </div>
 </body>

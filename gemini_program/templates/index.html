@@ -76,14 +76,16 @@
     </style>
 </head>
 <body>
-    <nav>
+    {% include 'navbar.html' %}
+    <!-- <nav>
         <a href="/">Home</a>
         <a href="/cover_letter_generator">AI Cover Letter Generator</a>
         <a href="/resume_enhancer">Resume Enhancer</a>
-    </nav>
+        <a href="/jobs">Job Tracker</a>
+    </nav> -->
     <div class="container">
         <header class="header">
-
+            <img src="{{ url_for('static', filename='hacklogo.png') }}" alt="Logo" width="100">
             <h1>NextGenHire</h1>
             <p>Your one-stop shop for career advancement.</p>
             
@@ -120,7 +122,7 @@
 
             <a href="/cover_letter_generator" class="link-button">AI Cover Letter Generator</a>
             <a href="/resume_enhancer" class="link-button">Resume Enhancer</a>
-
+            <a href="/jobs" class="link-button">Job Tracker</a>
 
         </main>
     </div>
