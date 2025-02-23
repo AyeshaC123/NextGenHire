@@ -1,12 +1,17 @@
 import google.generativeai as genai
+
 from flask import Flask, request, render_template, redirect, url_for
 import os
 import io
 import PyPDF2
 import re
+from dotenv import load_dotenv
+import os
+from flask import session
 
 app = Flask(__name__)
 
+load_dotenv()
 # Replace with your actual Gemini API key
 GOOGLE_API_KEY = "AIzaSyCvFJIH-5t0Uj9QKiXMjzUf4_H6Y3cIZqQ"
 genai.configure(api_key=GOOGLE_API_KEY)
@@ -61,9 +66,19 @@ def generate_text(prompt, matching_skills=None):
     except Exception as e:
         return f"An error occurred: {e}"
 
-@app.route('/', methods=['GET'])
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    if request.method == 'POST':
+        prompt = request.form['prompt']
+        generated_text = generate_text(prompt)
+        return render_template('index.html', generated_text=generated_text, session=session.get('user'))
+    return render_template('index.html', session=session.get('user'))
+
+# @app.route('/', methods=['GET'])
+# def index():
+#     return render_template('index.html')
+
 
 @app.route('/cover_letter_generator', methods=['GET', 'POST'])
 def cover_letter_generator():
