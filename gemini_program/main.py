@@ -28,5 +28,17 @@ def index():
         return render_template('index.html', generated_text=generated_text)
     return render_template('index.html')
 
+@app.route('/resume_enhancer')
+def resume_enhancer():
+    return render_template('resume_enhancer.html')
+
+@app.route('/cover_letter_generator', methods=['GET', 'POST'])
+def cover_letter_generator():
+    if request.method == 'POST':
+        prompt = request.form['prompt']
+        generated_text = generate_text(prompt)
+        return render_template('cover_letter_generator.html', generated_text=generated_text)
+    return render_template('cover_letter_generator.html')
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5001)
