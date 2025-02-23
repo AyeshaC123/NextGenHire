@@ -16,6 +16,33 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', system-ui, sans-serif;
         }
+        .input-section, .output-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        textarea, input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #f8fafc;
+            margin-bottom: 1rem;
+        }
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
         body {
             background: #f5f7fa;
             color: #2d3748;
@@ -36,9 +63,9 @@
             margin-bottom: 1rem;
         }
         .main-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
         }
         .link-button {
             display: inline-block;
@@ -101,45 +128,52 @@
             <p>Enhance your resume with our AI-powered tool.</p>
         </header>
         <main class="main-content">
-            <form method="post" enctype="multipart/form-data">
-                <label for="resume">Upload Resume:</label>
-                <input type="file" id="resume" name="resume"><br><br>
-
-                <label for="job_description">Job Description:</label>
-                <textarea id="job_description" name="job_description" rows="4" cols="50" placeholder="Paste the job description here..."></textarea><br><br>
-
-                <button type="submit" class="button">Analyze</button>
-            </form>
-
-            <div class="suggestions-container">
-                <div class="suggestion-item">
-                    <h2>Suggested Improvements:</h2>
-                    <div class="generated-content" id="action_verbs">
-                        {% if suggested_verbs %}
-                            <p>{{ suggested_verbs }}</p>
-                        {% endif %}
+            <section class="input-section">
+                <h2 class="section-title">Upload Resume & Job Description</h2>
+                <form method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="resume">Upload Resume:</label>
+                        <input type="file" id="resume" name="resume">
                     </div>
-                </div>
 
-                <div class="suggestion-item">
-                    <h2>Suggested Keywords:</h2>
-                    <div class="generated-content" id="keywords">
-                        {% if suggested_keywords %}
-                            <ul>
-                                {% for keyword in suggested_keywords %}
-                                    <li>{{ keyword }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
+                    <div class="form-group">
+                        <label for="job_description">Job Description:</label>
+                        <textarea id="job_description" name="job_description" rows="4" cols="50" placeholder="Paste the job description here..."></textarea>
                     </div>
-                </div>
-            </div>
 
-            <h2>Overall Impact Score:</h2>
-            <div class="generated-content">
-                <p><span class="impact-score">{{ impact_score }}%</span></p>
-                <p>{{ impact_explanation }}</p>
-            </div>
+                    <button type="submit" class="button">Analyze</button>
+                </form>
+            </section>
+
+            <section class="input-section">
+                <h2 class="section-title">Suggested Improvements:</h2>
+                <div class="generated-content" id="action_verbs">
+                    {% if suggested_verbs %}
+                        <p>{{ suggested_verbs }}</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="input-section">
+                <h2 class="section-title">Suggested Keywords:</h2>
+                <div class="generated-content" id="keywords">
+                    {% if suggested_keywords %}
+                        <ul>
+                            {% for keyword in suggested_keywords %}
+                                <li>{{ keyword }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="input-section">
+                <h2 class="section-title">Overall Impact Score:</h2>
+                <div class="generated-content">
+                    <p><span class="impact-score">{{ impact_score }}%</span></p>
+                    <p>{{ impact_explanation }}</p>
+                </div>
+            </section>
         </main>
     </div>
 </body>
