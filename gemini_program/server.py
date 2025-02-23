@@ -7,8 +7,6 @@ from urllib.parse import quote_plus, urlencode, quote
 from flask import Flask, redirect, render_template, session, url_for, request, send_file
 from authlib.integrations.flask_client import OAuth
 import google.generativeai as genai
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 import io
 import PyPDF2
 import chardet
