@@ -17,6 +17,12 @@ NextGenHire is a web application that helps users with their job search. It incl
     pip install -r gemini_program/requirements.txt
     ```
 
+    Additionally, install missing dependencies:
+
+    ```bash
+    pip install Flask-PyMongo chardet
+    ```
+
 3.  **Set up environment variables:**
 
     *   Create a `.env` file in the `NextGenHire/` directory.
