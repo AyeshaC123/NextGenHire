@@ -217,7 +217,7 @@ def callback():
     userinfo = token.get("userinfo", {})
     session["user_id"] = userinfo.get("sub")  # Auth0 user ID (e.g., "auth0|123456789")
 
-    return redirect(url_for("jobs"))
+    return redirect(url_for("home"))
 
 
 @app.route("/logout")
