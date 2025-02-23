@@ -63,6 +63,42 @@ def extract_text_from_pdf(file):
         return f"An error occurred while reading the PDF: {e}"
 
 # ========================
+#  Weak Verb Identification
+# ========================
+def suggest_stronger_verbs(text):
+    """
+    Identifies weak verbs in the text and suggests stronger alternatives.
+    """
+    weak_verbs = {
+        "is": ["demonstrates", "establishes", "exemplifies"],
+        "was": ["demonstrated", "established", "exemplified"],
+        "are": ["demonstrate", "establish", "exemplify"],
+        "were": ["demonstrated", "established", "exemplified"],
+        "have": ["possess", "utilize", "incorporate"],
+        "had": ["possessed", "utilized", "incorporated"],
+        "helped": ["assisted", "supported", "facilitated"],
+        "made": ["created", "developed", "generated"],
+        "did": ["executed", "performed", "accomplished"],
+        "said": ["articulated", "conveyed", "expressed"],
+        "went": ["progressed", "advanced", "transitioned"],
+        "got": ["obtained", "acquired", "achieved"],
+        "knew": ["understood", "recognized", "perceived"],
+        "thought": ["believed", "assumed", "concluded"],
+        "felt": ["experienced", "sensed", "detected"],
+        "saw": ["observed", "witnessed", "noticed"],
+        "heard": ["listened", "attended", "overheard"]
+    }
+
+    suggested_verbs = []
+    for weak_verb, alternatives in weak_verbs.items():
+        if weak_verb in text.lower():
+            suggested_verbs.append({
+                "weak_verb": weak_verb,
+                "alternatives": alternatives
+            })
+    return suggested_verbs
+
+# ========================
 #  Technical Skills Extraction
 # ========================
 def extract_technical_skills(text):
@@ -208,8 +244,38 @@ def cover_letter_generator():
 # ========================
 #  Resume Enhancer Page
 # ========================
-@app.route("/resume_enhancer")
+@app.route("/resume_enhancer", methods=['GET', 'POST'])
 def resume_enhancer():
+    if request.method == 'POST':
+        if 'resume' not in request.files:
+            return render_template('resume_enhancer.html', error='No resume file uploaded')
+
+        resume_file = request.files['resume']
+        if resume_file.filename == '':
+            return render_template('resume_enhancer.html', error='No resume file selected')
+
+        job_description = request.form.get('job_description')
+        if not job_description:
+            return render_template('resume_enhancer.html', error='No job description provided')
+
+        try:
+            resume_text = extract_text_from_pdf(resume_file)
+            suggested_verbs = suggest_stronger_verbs(resume_text)
+
+            job_description_skills = extract_technical_skills(job_description)
+            resume_skills = extract_technical_skills(resume_text)
+            missing_skills = job_description_skills.difference(resume_skills)
+            suggested_keywords = list(missing_skills)
+
+            return render_template(
+                "resume_enhancer.html",
+                suggested_verbs=suggested_verbs,
+                suggested_keywords=suggested_keywords
+            )
+
+        except Exception as e:
+            return render_template("resume_enhancer.html", error=str(e))
+
     return render_template("resume_enhancer.html")
 
 # ========================
