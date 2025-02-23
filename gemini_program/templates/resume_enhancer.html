@@ -53,7 +53,6 @@
             background-color: #333;
             overflow: hidden;
         }
-
         nav a {
             float: left;
             display: block;
@@ -62,7 +61,6 @@
             padding: 14px 16px;
             text-decoration: none;
         }
-
         nav a:hover {
             background-color: #ddd;
             color: black;
@@ -75,6 +73,15 @@
             min-height: 200px;
             white-space: pre-line;
         }
+        .suggestions-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .suggestion-box {
+            width: 48%;
+        }
+     
     </style>
 </head>
 <body>
@@ -92,20 +99,24 @@
             <form method="post" enctype="multipart/form-data">
                 <label for="resume">Upload Resume:</label>
                 <input type="file" id="resume" name="resume"><br><br>
-
                 <label for="job_description">Job Description:</label>
                 <textarea id="job_description" name="job_description" rows="4" cols="50" placeholder="Paste the job description here..."></textarea><br><br>
-
                 <button type="submit" class="button">Analyze</button>
             </form>
-
-            <h2>Suggested Improvements:</h2>
-            <div class="generated-content" id="action_verbs">
-                {% if suggested_verbs %}
-                    <p>{{ suggested_verbs }}</p>
-                {% endif %}
-            </div>
-
+            <div class="suggestions-container">
+                <div class="suggestion-box">
+                    <h2>Suggested Action Verbs:</h2>
+                    <div class="generated-content" id="action_verbs">
+                        {% if suggested_verbs %}
+                            <ul>
+                                {% for verb in suggested_verbs %}
+                                    <li>{{ verb.weak_verb }}: {{ verb.alternatives|join(', ') }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="suggestion-box">
             <h2>Suggested Keywords:</h2>
             <div class="generated-content" id="keywords">
                 {% if suggested_keywords %}

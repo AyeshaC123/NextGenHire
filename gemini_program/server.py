@@ -84,9 +84,6 @@ def suggest_stronger_verbs(resume_text):
     except Exception as e:
         return f"An error occurred: {e}"
 
-# ========================
-#  Technical Skills Extraction
-# ========================
 def extract_technical_skills(text):
     """
     Extracts technical skills using Gemini API.
@@ -246,6 +243,10 @@ def resume_enhancer():
 
         try:
             resume_text = extract_text_from_pdf(resume_file)
+
+            if not resume_text:
+                return render_template('resume_enhancer.html', error='Could not extract text from resume. Please ensure it is a valid PDF.')
+
             suggested_verbs = suggest_stronger_verbs(resume_text)
 
             job_description_skills = extract_technical_skills(job_description)
@@ -256,7 +257,7 @@ def resume_enhancer():
             return render_template(
                 "resume_enhancer.html",
                 suggested_verbs=suggested_verbs,
-                suggested_keywords=suggested_keywords
+                suggested_keywords=suggested_keywords,
             )
 
         except Exception as e:
