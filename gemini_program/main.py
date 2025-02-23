@@ -61,23 +61,27 @@ def generate_text(prompt, matching_skills=None):
     except Exception as e:
         return f"An error occurred: {e}"
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index():
+    return render_template('index.html')
+
+@app.route('/cover_letter_generator', methods=['GET', 'POST'])
+def cover_letter_generator():
     if request.method == 'POST':
         # Check if the resume file was uploaded
         if 'resume' not in request.files:
-            return render_template('index.html', error='No resume file uploaded')
+            return render_template('cover_letter_generator.html', error='No resume file uploaded')
 
         resume_file = request.files['resume']
 
         # Check if a file was selected
         if resume_file.filename == '':
-            return render_template('index.html', error='No resume file selected')
+            return render_template('cover_letter_generator.html', error='No resume file selected')
 
         # Check if the job description was provided
         job_description = request.form.get('prompt')
         if not job_description:
-            return render_template('index.html', error='No job description provided')
+            return render_template('cover_letter_generator.html', error='No job description provided')
 
         try:
             # Extract text from the resume
@@ -92,24 +96,16 @@ def index():
             # Generate the cover letter
             generated_text = generate_text(prompt)
 
-            return render_template('index.html', generated_text=generated_text)
+            return render_template('cover_letter_generator.html', generated_text=generated_text)
 
         except Exception as e:
-            return render_template('index.html', error=str(e))
+            return render_template('cover_letter_generator.html', error=str(e))
 
-    return render_template('index.html')
+    return render_template('cover_letter_generator.html')
 
 @app.route('/resume_enhancer')
 def resume_enhancer():
     return render_template('resume_enhancer.html')
-
-@app.route('/cover_letter_generator', methods=['GET', 'POST'])
-def cover_letter_generator():
-    if request.method == 'POST':
-        prompt = request.form['prompt']
-        generated_text = generate_text(prompt)
-        return render_template('cover_letter_generator.html', generated_text=generated_text)
-    return render_template('cover_letter_generator.html')
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5004)
