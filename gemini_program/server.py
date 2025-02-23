@@ -71,10 +71,11 @@ def suggest_stronger_verbs(resume_text):
     """
     prompt = (
         f"Please review the following resume and provide specific suggestions for improvement. "
-        f"Identify areas where the language is weak, vague, or could be more impactful. "
-        f"Suggest specific rewrites or alternative phrasing to strengthen the resume only for the descriptions, not trivial things like name, email, gpa, etc. "
-        f"Focus on improving the clarity, conciseness, and impact of the language. only give suggestions for up to 5 of the most needed things a time not more "
-        f"Return the suggestions in a list format, with each item including the original text and the suggested improvement.\n\n"
+        f"Try to give up to 5 most relevant/needed suggestions for my resume regarding the descriptions, not trivial things like name, email, gpa, etc. "
+        f"only give suggestions for things I do not have in my resume. "
+        # f"Identify areas where the language is weak, vague, or could be more impactful. "
+        # f"Suggest specific rewrites or alternative phrasing to strengthen the resume only for the descriptions, not trivial things like name, email, gpa, etc. "
+        # f"Focus on improving the clarity, conciseness, and impact of the language. only give suggestions for up to 5 of the most needed things a time not more "
         f"Resume:\n{resume_text}"
     )
 
