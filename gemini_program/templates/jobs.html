@@ -27,7 +27,7 @@
             margin-bottom: 20px;
         }
 
-        input, button {
+        input, button, select {
             padding: 10px;
             margin: 5px;
             border: 1px solid #ccc;
@@ -72,13 +72,15 @@
             background-color: #dc3545;
             padding: 5px 10px;
             font-size: 14px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
         .delete-btn:hover {
             background-color: #c82333;
         }
-
-        /* Navbar styles */
     </style>
 </head>
 <body>
@@ -89,7 +91,6 @@
     <form action="/add_job" method="post">
         <input type="text" name="company" placeholder="Company Name" required>
         <input type="text" name="position" placeholder="Job Position" required>
-        <input type="text" name="status" placeholder="Status (Applied, Interviewing, etc.)">
         <button type="submit">Add Job</button>
     </form>
 
@@ -98,13 +99,23 @@
             <th>Company</th>
             <th>Position</th>
             <th>Status</th>
-            <th>Action</th>
+            <th>Update Status</th>
+            <th>Delete</th>
         </tr>
         {% for job in jobs %}
             <tr>
                 <td>{{ job.company }}</td>
                 <td>{{ job.position }}</td>
                 <td>{{ job.status }}</td>
+                <td>
+                    <form action="/update_status/{{ job._id }}" method="post">
+                        <select name="status" onchange="this.form.submit()">
+                            <option value="Applied" {% if job.status == "Applied" %}selected{% endif %}>Applied</option>
+                            <option value="Interview" {% if job.status == "Interview" %}selected{% endif %}>Interview</option>
+                            <option value="Rejected" {% if job.status == "Rejected" %}selected{% endif %}>Rejected</option>
+                        </select>
+                    </form>
+                </td>
                 <td>
                     <form action="/delete_job/{{ job._id }}" method="post" style="display:inline;">
                         <button type="submit" class="delete-btn">Delete</button>

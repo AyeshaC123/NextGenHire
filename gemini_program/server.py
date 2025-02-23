@@ -138,7 +138,13 @@ def login():
 def callback():
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
-    return redirect("/")
+
+    # Extract user_id from Auth0 token
+    userinfo = token.get("userinfo", {})
+    session["user_id"] = userinfo.get("sub")  # Auth0 user ID (e.g., "auth0|123456789")
+
+    return redirect(url_for("jobs"))
+
 
 @app.route("/logout")
 def logout():
@@ -171,14 +177,23 @@ def index():
 # Add Job Application Route
 @app.route("/add_job", methods=["POST"])
 def add_job():
+    if "user_id" not in session:
+        return "Unauthorized", 401  # User must be logged in
+
     company = request.form.get("company")
     position = request.form.get("position")
     status = request.form.get("status", "Applied")
 
     if company and position:
-        mongo.db.applied_jobs.insert_one({"company": company, "position": position, "status": status})
+        mongo.db.applied_jobs.insert_one({
+            "user_id": session["user_id"],  # Store Auth0 user ID with job
+            "company": company,
+            "position": position,
+            "status": status
+        })
 
-    return redirect(url_for("jobs"))  # Redirect to "/jobs" instead of "index"
+    return redirect(url_for("jobs"))
+
 
 
 # Delete Job Route
@@ -250,16 +265,31 @@ def resume_enhancer():
 
 @app.route("/jobs")
 def jobs():
-    try:
-        if mongo.db is None:
-            return "❌ ERROR: MongoDB is not connected.", 500
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
-        jobs_list = list(mongo.db.applied_jobs.find())  # Ensure it's a list
-        print(f"✅ Jobs retrieved: {jobs_list}")  # Debugging output
-        return render_template("jobs.html", jobs=jobs_list)
-    except Exception as e:
-        print(f"❌ Error in /jobs route: {str(e)}")  # Print the actual error
-        return "Internal Server Error", 500
+    # Fetch only the jobs belonging to the logged-in Auth0 user
+    jobs_list = list(mongo.db.applied_jobs.find({"user_id": session["user_id"]}))
+
+    return render_template("jobs.html", jobs=jobs_list)
+
+@app.route("/update_status/<job_id>", methods=["POST"])
+def update_status(job_id):
+    if "user_id" not in session:
+        return "Unauthorized", 401  # Ensure user is logged in
+
+    new_status = request.form.get("status")  # Get new status from form
+
+    if new_status not in ["Applied", "Interview", "Rejected"]:
+        return "Invalid status", 400  # Validate status input
+
+    from bson.objectid import ObjectId
+    mongo.db.applied_jobs.update_one(
+        {"_id": ObjectId(job_id), "user_id": session["user_id"]},  # Ensure user owns the job
+        {"$set": {"status": new_status}}  # Update status
+    )
+
+    return redirect(url_for("jobs"))
 
 # ========================
 #  Run Flask App
